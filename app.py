@@ -4,9 +4,12 @@ from cStringIO import StringIO
 import boto3
 from flask import Flask, jsonify
 from flask_cors import CORS
+from flask_compress import Compress
 
 app = Flask(__name__)
 CORS(app)
+Compress(app)
+
 s3 = boto3.client('s3')
 bucket = 'lambda-multiplechoice-workplace'
 folder = 'scrapinghub/'

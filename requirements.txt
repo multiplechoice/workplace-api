@@ -1,3 +1,4 @@
 Flask==0.12.2
 zappa==0.41.3
 Flask-Cors==3.0.2
+Flask-Compress==1.4.0

@@ -4,5 +4,6 @@
         "aws_region": "eu-central-1", 
         "profile_name": "default", 
         "s3_bucket": "zappa.api"
+        "remote_env": "s3://zappa.api/remote_env.json",
     }
 }

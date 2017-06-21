@@ -1,4 +1,5 @@
 import datetime
+import os
 from itertools import chain
 
 from flask import Flask, jsonify
@@ -12,7 +13,7 @@ from sqlalchemy.dialects.postgresql import DATE
 app = Flask(__name__)
 CORS(app)
 Compress(app)
-credentials = 'postgresql://alexander@localhost:5432/alexander'
+credentials = os.environ.get('PG_CREDS')
 
 
 def flatten(lists):
@@ -48,7 +49,7 @@ def valid_date(date):
 
 
 @app.route('/date/<date>')
-def get_all_results(date):
+def get_by_date_of_posting(date):
     if not valid_date(date):
         return jsonify([])
 
@@ -56,6 +57,14 @@ def get_all_results(date):
         query = session.query(ScrapedJob.data).filter(
             cast(func.date_trunc('day', ScrapedJob.posted), DATE) == date
         )
+        return jsonify(list(flatten(query.all())))
+
+
+@app.route('/all')
+def get_primary_result_set():
+    # return the top 100 results ordered by the date of their posting
+    with session_scope(credentials) as session:
+        query = session.query(ScrapedJob.data).order_by(ScrapedJob.posted.desc()).limit(100)
         return jsonify(list(flatten(query.all())))
 
 

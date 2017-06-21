@@ -60,6 +60,13 @@ def get_by_date_of_posting(date):
         return jsonify(list(flatten(query.all())))
 
 
+@app.route('/spider/<spider>')
+def get_by_spider(spider):
+    with session_scope(credentials) as session:
+        query = session.query(ScrapedJob.data).filter(ScrapedJob.spider == spider).limit(100)
+        return jsonify(list(flatten(query.all())))
+
+
 @app.route('/all')
 def get_primary_result_set():
     # return the top 100 results ordered by the date of their posting

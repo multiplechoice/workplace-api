@@ -2,13 +2,11 @@ import datetime
 import os
 from itertools import chain
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_compress import Compress
 from flask_cors import CORS
 from mappings import ScrapedJob
 from mappings.utils import session_scope
-from sqlalchemy import func, cast
-from sqlalchemy.dialects.postgresql import DATE
 
 app = Flask(__name__)
 CORS(app)
@@ -19,11 +17,13 @@ credentials = os.environ.get('PG_CREDS')
 def flatten(lists):
     """
     Flatten one level of nesting. Courtesy of itertools recipes.
+
     Args:
         lists (list): a list of lists.
 
     Returns:
         list: list containing elements from the nested lists
+
     """
     return chain.from_iterable(lists)
 
@@ -31,6 +31,7 @@ def flatten(lists):
 def valid_date(date):
     """
     Does a quick check on the date to avoid doing a db dip to get an error we could have avoided
+
     Args:
         date (basestring): the date input that we're validating
 
@@ -48,31 +49,49 @@ def valid_date(date):
     return True
 
 
+def get_args():
+    """
+    Extracts known arguments from the incoming request, supplying a default value and maximum clamping
+
+    Returns:
+        tuple
+
+    """
+    days = min(request.args.get('days', default=7, type=int), 31)
+    n_results = min(request.args.get('n_results', default=100, type=int), 1000)
+    return days, n_results
+
+
 @app.route('/date/<date>')
 def get_by_date_of_posting(date):
     if not valid_date(date):
         return jsonify([])
 
+    _, n_results = get_args()
     with session_scope(credentials) as session:
-        query = session.query(ScrapedJob.data).filter(
-            cast(func.date_trunc('day', ScrapedJob.posted), DATE) == date
-        )
+        query = session.query(ScrapedJob.data).filter(ScrapedJob.date_of_posting == date).limit(n_results)
         return jsonify(list(flatten(query.all())))
 
 
 @app.route('/spider/<spider>')
 def get_by_spider(spider):
+    _, n_results = get_args()
     with session_scope(credentials) as session:
-        query = session.query(ScrapedJob.data).filter(ScrapedJob.spider == spider).limit(100)
+        query = session.query(ScrapedJob.data).filter(ScrapedJob.spider == spider).limit(n_results)
         return jsonify(list(flatten(query.all())))
 
 
 @app.route('/all')
 def get_primary_result_set():
-    # return the top 100 results ordered by the date of their posting
+    n_days, n_results = get_args()
+    # return the top n results ordered by the date of their posting
     with session_scope(credentials) as session:
-        query = session.query(ScrapedJob.data).order_by(ScrapedJob.posted.desc()).limit(100)
-        return jsonify(list(flatten(query.all())))
+        query = session.query(ScrapedJob).filter(
+            ScrapedJob.date_of_posting >= datetime.datetime.today().date() - datetime.timedelta(days=n_days)
+        )
+        query = query.order_by(ScrapedJob.posted.desc()).limit(n_results)
+        results = [row.as_dict() for row in query.all()]
+        return jsonify(results)
 
 
 if __name__ == '__main__':

@@ -103,7 +103,7 @@ def get_by_date_of_posting(date):
         query = session.query(ScrapedJob.data).filter(ScrapedJob.date_of_posting == date).limit(args.n_results)
         results = [row.as_dict() for row in query.all()]
         if args.group_by_spider:
-            return jsonify(group_results(results))
+            results = group_results(results)
         return jsonify(results)
 
 
@@ -127,7 +127,7 @@ def get_primary_result_set():
         query = query.order_by(ScrapedJob.posted.desc()).limit(args.n_results)
         results = [row.as_dict() for row in query.all()]
         if args.group_by_spider:
-            return jsonify(group_results(results))
+            results = group_results(results)
         return jsonify(results)
 
 

@@ -73,18 +73,24 @@ def group_results(results, key='spider'):
     return grouped_results
 
 
+class Arguments(object):
+    pass
+
+
 def get_args():
     """
-    Extracts known arguments from the incoming request, supplying a default value and maximum clamping
+    Extracts known arguments from the incoming request, supplying a default value and maximum clamping, where
+    necessary.
 
     Returns:
-        tuple
+        obj:`Arguments`: simple object containing the extracted parameters
 
     """
-    n_days = min(request.args.get('days', default=7, type=int), 31)
-    n_results = min(request.args.get('results', default=100, type=int), 1000)
-    group = request.args.get('group', default=False, type=bool)
-    return n_days, n_results, group
+    args = Arguments()
+    args.n_days = min(request.args.get('days', default=7, type=int), 31)
+    args.n_results = min(request.args.get('results', default=100, type=int), 1000)
+    args.group_by_spider = request.args.get('group', default=False, type=bool)
+    return args
 
 
 @app.route('/date/<date>')
@@ -92,36 +98,36 @@ def get_by_date_of_posting(date):
     if not valid_date(date):
         return jsonify([])
 
-    _, n_results, group_by_spider = get_args()
+    args = get_args()
     with session_scope(credentials) as session:
-        query = session.query(ScrapedJob.data).filter(ScrapedJob.date_of_posting == date).limit(n_results)
+        query = session.query(ScrapedJob.data).filter(ScrapedJob.date_of_posting == date).limit(args.n_results)
         results = [row.as_dict() for row in query.all()]
-        if group_by_spider:
-            return jsonify(group_results_by_spider_name(results))
+        if args.group_by_spider:
+            return jsonify(group_results(results))
         return jsonify(results)
 
 
 @app.route('/spider/<spider>')
 def get_by_spider(spider):
-    _, n_results, _ = get_args()
+    args = get_args()
     with session_scope(credentials) as session:
-        query = session.query(ScrapedJob).filter(ScrapedJob.spider == spider).limit(n_results)
+        query = session.query(ScrapedJob).filter(ScrapedJob.spider == spider).limit(args.n_results)
         results = [row.as_dict() for row in query.all()]
         return jsonify(results)
 
 
 @app.route('/all')
 def get_primary_result_set():
-    n_days, n_results, group_by_spider = get_args()
+    args = get_args()
     # return the top n results ordered by the date of their posting
     with session_scope(credentials) as session:
         query = session.query(ScrapedJob).filter(
-            ScrapedJob.date_of_posting >= datetime.datetime.today().date() - datetime.timedelta(days=n_days)
+            ScrapedJob.date_of_posting >= datetime.datetime.today().date() - datetime.timedelta(days=args.n_days)
         )
-        query = query.order_by(ScrapedJob.posted.desc()).limit(n_results)
+        query = query.order_by(ScrapedJob.posted.desc()).limit(args.n_results)
         results = [row.as_dict() for row in query.all()]
-        if group_by_spider:
-            return jsonify(group_results_by_spider_name(results))
+        if args.group_by_spider:
+            return jsonify(group_results(results))
         return jsonify(results)
 
 

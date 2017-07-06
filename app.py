@@ -100,7 +100,7 @@ def get_by_date_of_posting(date):
 
     args = get_args()
     with session_scope(credentials) as session:
-        query = session.query(ScrapedJob.data).filter(ScrapedJob.date_of_posting == date).limit(args.n_results)
+        query = session.query(ScrapedJob).filter(ScrapedJob.date_of_posting == date).limit(args.n_results)
         results = [row.as_dict() for row in query.all()]
         if args.group_by_spider:
             results = group_results(results)

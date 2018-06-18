@@ -1,4 +1,4 @@
-|Build Status| |Coveralls Status| |Requirements Status|
+|Build Status| |Coveralls Status| |Updates|
 
 api
 ===
@@ -11,6 +11,6 @@ api
   :target: https://travis-ci.org/multiplechoice/api
 .. |Coveralls Status| image:: https://coveralls.io/repos/github/multiplechoice/api/badge.svg?branch=master
   :target: https://coveralls.io/github/multiplechoice/api?branch=master
-.. |Requirements Status| image:: https://requires.io/github/multiplechoice/api/requirements.svg?branch=master
-  :target: https://requires.io/github/multiplechoice/api/requirements/?branch=master
-  :alt: Requirements Status
+.. |Updates| image:: https://pyup.io/repos/github/multiplechoice/api/shield.svg
+  :target: https://pyup.io/repos/github/multiplechoice/api/
+  :alt: Updates

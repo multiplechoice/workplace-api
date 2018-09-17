@@ -2,7 +2,7 @@ Flask==1.0.2
 zappa==0.46.2
 Flask-Cors==3.0.4
 Flask-Compress==1.4.0
-pytest==3.7.3
-pytest-cov==2.5.1
+pytest==3.8.0
+pytest-cov==2.6.0
 git+https://github.com/multiplechoice/sqlalchemy-mappings.git@2e5cab4d771137d42b59bf88fd92b7db6f1dbb3a
 

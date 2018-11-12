@@ -1,6 +1,6 @@
 Flask==1.0.2
 zappa==0.47.0
-Flask-Cors==3.0.6
+Flask-Cors==3.0.7
 Flask-Compress==1.4.0
 pytest==3.9.3
 pytest-cov==2.6.0

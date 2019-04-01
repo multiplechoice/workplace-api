@@ -92,7 +92,7 @@ def test_group_by_spider():
 
 def test_group_when_key_missing():
     grouped = group_results(examples, 'this_key_doesnt_exist')
-    assert grouped.keys() == ['unknown']
+    assert list(grouped.keys()) == ['unknown']
     assert grouped['unknown'] == examples
 
 

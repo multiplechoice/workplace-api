@@ -34,13 +34,13 @@ def valid_date(date):
     Does a quick check on the date to avoid doing a db dip to get an error we could have avoided
 
     Args:
-        date (basestring): the date input that we're validating
+        date (string): the date input that we're validating
 
     Returns:
         bool: whether or not we think the given input string is a date or not
 
     """
-    if not isinstance(date, basestring):
+    if date is None:
         return False
 
     try:

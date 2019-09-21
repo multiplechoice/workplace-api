@@ -12,7 +12,6 @@ Running
 Run locally after installing Python 3.6 (Zappa doesn't currently support higher than that) by simply running app.py
 
 .. |Actions Status| image:: https://github.com/multiplechoice/api/workflows/pytest/badge.svg
-  :target: https://travis-ci.org/multiplechoice/api
 .. |Coveralls Status| image:: https://coveralls.io/repos/github/multiplechoice/api/badge.svg?branch=master
   :target: https://coveralls.io/github/multiplechoice/api?branch=master
 .. |Updates| image:: https://pyup.io/repos/github/multiplechoice/api/shield.svg

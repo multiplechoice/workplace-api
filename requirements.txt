@@ -1,5 +1,5 @@
 Flask==1.1.2
 zappa==0.52.0
 Flask-Cors==3.0.9
-Flask-Compress==1.5.0
+Flask-Compress==1.7.0
 git+https://github.com/multiplechoice/sqlalchemy-mappings.git@17e50cfb97695badb192156ff98c39c07024d0ff
